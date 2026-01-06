@@ -12,6 +12,40 @@
       display: block;
     }
 
+    /* Estilo dos cards */
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center; /* Centraliza os cards */
+    }
+
+    .card {
+      width: 90%;
+      max-width: 350px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 15px;
+      text-align: center;
+    }
+
+    .card img {
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .lista-servico {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .lista-servico li {
+      margin: 5px 0;
+    }
+
+    /* Ajustes para telas menores */
     @media (max-width: 768px) {
       header {
         display: flex;
@@ -48,9 +82,8 @@
       }
 
       .cards {
-        display: flex;
         flex-direction: column;
-        gap: 20px;
+        align-items: center;
       }
     }
   </style>
