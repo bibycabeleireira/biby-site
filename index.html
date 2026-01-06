@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsivo -->
+  <title>Biby Cabeleleira</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      nav ul {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+      }
+
+      nav ul li {
+        margin: 10px 0;
+      }
+
+      .botoes {
+        margin-top: 15px;
+      }
+
+      section {
+        padding: 10px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      form input, form select, form button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .cards {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="logo.png" alt="Logo do Salão Beleza Natural">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#servicos">Serviços</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+    </nav>
+    <div class="botoes">
+      <button class="agendar" onclick="mostrarFormulario()">Agendar</button>
+    </div>
+  </header>
+
+  <section class="banner">
+    <img src="banner.jpg" alt="Banner do Salão Beleza Natural">
+  </section>
+
+  <section class="servicos" id="servicos">
+    <h2>SERVIÇOS</h2>
+    <p>Qual é o ideal para você?</p>
+    <div class="cards">
+      <div class="card">
+        <img src="transformacao.jpg" alt="Transformação">
+        <h3>TRANSFORMAÇÃO</h3>
+        <ul class="lista-servico">
+          <li>Escova</li>
+          <li>Aplicação de Cílios</li>
+          <li>Design e Henna</li>
+        </ul>
+      </div>
+      <div class="card">
+        <img src="tratamentos.jpg" alt="Tratamentos">
+        <h3>TRATAMENTOS</h3>
+        <ul class="lista-servico">
+          <li>Botox</li>
+          <li>Hidratação</li>
+          <li>Selagem</li>
+        </ul>
+      </div>
+      <div class="card">
+        <img src="coloracao.jpg" alt="Coloração">
+        <h3>COLORAÇÃO</h3>
+        <ul class="lista-servico">
+          <li>Coloração</li>
+          <li>Mechas e luzes</li>
+          <li>Maquiagem</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="agendamento" id="agendamento" style="display: none;">
+    <h2>Agende seu horário</h2>
+    <form id="form-agendamento">
+      <label for="servico">Qual o serviço?</label>
+      <select id="servico" name="servico" required>
+        <option value="">Selecione...</option>
+        <option value="Transformação">Transformação</option>
+        <option value="Tratamento">Tratamento</option>
+        <option value="Coloração">Coloração</option>
+      </select>
+
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+
+      <label for="telefone">Telefone:</label>
+      <input type="tel" id="telefone" name="telefone" required>
+
+      <label for="data">Data:</label>
+      <input type="date" id="data" name="data" required>
+
+      <label for="hora">Hora:</label>
+      <input type="time" id="hora" name="hora" required>
+
+      <button type="submit">Confirmar Agendamento</button>
+    </form>
+    <div id="mensagem" class="mensagem-alerta"></div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 BIBY CABELELEIRA - Todos os direitos reservados</p>
+  </footer>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3RjAQZZDzsblZsyBO3g5sSJ-_1FtUcmc",
+      authDomain: "salao-de-cabelo-152d1.firebaseapp.com",
+      projectId: "salao-de-cabelo-152d1",
+      storageBucket: "salao-de-cabelo-152d1.appspot.com",
+      messagingSenderId: "387341607426",
+      appId: "1:387341607426:web:e47e62d64deed0dd7b7d1b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.mostrarFormulario = function mostrarFormulario() {
+      const sec = document.getElementById("agendamento");
+      sec.style.display = "block";
+      window.scrollTo({ top: sec.offsetTop, behavior: "smooth" });
+    };
+
+    document.getElementById("form-agendamento").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const servico = document.getElementById("servico").value;
+      const nome = document.getElementById("nome").value.trim();
+      const telefone = document.getElementById("telefone").value.trim();
+      const data = document.getElementById("data").value;
+      const hora = document.getElementById("hora").value;
+      const mensagem = document.getElementById("mensagem");
+
+      try {
+        await addDoc(collection(db, "agendamentos"), {
+          servico, nome, telefone, data, hora,
+          status: "pendente",
+          criadoEm: new Date().toISOString()
+        });
+        mensagem.textContent = "✅ Agendamento enviado! Aguarde confirmação.";
+        mensagem.classList.add("mensagem-sucesso");
+        this.reset();
+      } catch (error) {
+        console.error(error);
+        mensagem.textContent = "❌ Erro ao enviar agendamento.";
+        mensagem.classList.add("mensagem-erro");
+      }
+    });
+  </script>
+</body>
+</html>
